@@ -136,7 +136,7 @@ Hostboot firmware uses [buildroot](http://buildroot.uclibc.org/about.html) as it
     source op-build-env
     op-build palmetto_defconfig && op-build
 
-Initial support for compiling hostboot is only provided for recent distributions of x86 Linux&reg; systems. The required cross compilers and all other dependencies are a part of the buildroot package that you  downloaded.  See the included README for more information about generating the required flash image and getting it loaded on your system.
+Initial support for compiling hostboot is only provided for recent distributions of x86 Linux&reg; 64 bit systems. The required cross compilers and all other dependencies are a part of the buildroot package that you  downloaded.  See the included README for more information about generating the required flash image and getting it loaded on your system.
 
 ## Targeting Model ##
 
