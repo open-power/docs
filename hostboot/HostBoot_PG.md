@@ -126,7 +126,7 @@ The following base enablement libraries and services are required by the hostboo
 
 The hostboot source tree layout follows the standard Linux kernel layout.  All source code resides under the src/ tree.  The hostboot kernel source (.C files) are under src/kernel.  The include files for the kernel can be found under src/include/kernel/.  Similarly, the user space source can be found under src/usr/ and src/include/usr.
 
-There are a variety of other directories under usr/src.  The naming convention of these directories and the organization described previously will help you navigate through these directories.
+There are a variety of other directories under src/usr.  The naming convention of these directories and the organization described previously will help you navigate through these directories.
 
 Hostboot firmware makes extensive use of [Doxygen](http://www.doxygen.org/) for its documentation.  Type  `make docs` to generate the HTML documentation based on the doxygen in the code.  The documentation will then be in obj/doxygen/.  Load obj/doxygen/html/index.html in a web browser to view. Our team usually views the doxygen when looking at the source code directly, but the html output can be useful at times.
 
