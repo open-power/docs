@@ -7,5 +7,5 @@ As always is the case with documentation, it usually needs some updates.  So fee
 base with us on the mailing lists.
 
 It is recommended that you first read the [Hostboot Programmers
-Guide](https://github.com/open-power/docs/blob/master/hostboot/HostBoot_PG.md).  This document will give you an
-overview of the Hostboot firmware and some pointers on the source code. 
+Guide](https://github.com/open-power/docs/blob/master/hostboot/HostBoot_PG.md) and the [OCC Overview](https://github.com/open-power/docs/blob/master/occ/OCC_overview.md).  These documents will give you an
+overview of the OCC, Hostboot firmware and some pointers on the source code. 
