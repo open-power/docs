@@ -340,28 +340,3 @@ The following terms are used in this document.
 **Winkle**	Special very-low power state for a processor core, where most of it, and the surrounding logic, is shut off. Because this state is destructive to core initialization settings, a core-specific winkle image containing initialization instructions must be executed by the PORE to bring the core back online. Core winkle can only occur when all hardware threads for a given core commit themselves to the winkle state.
 
 **XSCOM**	Special, fast SCOM that allows the processor cores to directly SCOM the PIB. Processor buses must be enabled to the slave processor chips for the master processor to XSCOM them.
-
-# Copyright and Disclaimer #
-
-© Copyright International Business Machines Corporation 2014
-
-IBM, the IBM logo, and ibm.com are trademarks or registered trademarks of International Business Machines Corp., registered in many jurisdictions worldwide. Other product and service names might be trademarks of IBM or other companies. A current list of IBM trademarks is available on the Web at “Copyright and trademark information” at www.ibm.com/legal/copytrade.shtml.
-
-Linux is a registered trademark of Linus Torvalds in the United States, other countries, or both.
-
-Other company, product, and service names may be trademarks or service marks of others.
-All information contained in this document is subject to change without notice. The products described in this document are NOT intended for use in applications such as implantation, life support, or other hazardous uses where malfunction could result in death, bodily injury, or catastrophic property damage. The information contained in this document does not affect or change IBM product specifications or warranties. Nothing in this document shall operate as an express or implied license or indemnity under the intellectual property rights of IBM or third parties. All information contained in this document was obtained in specific environments, and is presented as an illustration. The results obtained in other operating environments may vary.
-
-While the information contained herein is believed to be accurate, such information is preliminary, and should not be relied upon for accuracy or completeness, and no representations or warranties of accuracy or completeness are made.
-
-Note: This document contains information on products in the design, sampling and/or initial production phases of development. This information is subject to change without notice. Verify with your IBM field applications engineer that you have the latest version of this document before finalizing a design.
-
-THE INFORMATION CONTAINED IN THIS DOCUMENT IS PROVIDED ON AN “AS IS” BASIS. In no event will IBM be liable for damages arising directly or indirectly from any use of the information contained in this document.
-
-IBM Systems and Technology Group
-2070 Route 52, Bldg. 330
-Hopewell Junction, NY 12533-6351
-
-The IBM home page can be found at [ibm.com®](http://www.ibm.com/us/en/).
-
-July 2, 2014
