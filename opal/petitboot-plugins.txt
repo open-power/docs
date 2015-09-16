@@ -13,7 +13,7 @@ supported and what is explicitly *not* supported.
 Authors
 -------
 Initial Specification Draft: Stewart Smith <stewart@linux.vnet.ibm.com>
-Reference implementation of Petitboot Plugin: Jeremy Kerr <jmkerr@au1.ibm.com>
+Reference implementation of Petitboot Plugin: Jeremy Kerr <jk@ozlabs.org>
 
 Availability
 ------------
