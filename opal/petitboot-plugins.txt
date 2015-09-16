@@ -63,6 +63,11 @@ in the current implementation WILL) mount filesystems over them:
 - proc
 - var
 
+The petitboot environment WILL provide a full proc filesystem in /proc
+The petitboot environment WILL provide a full sysfs filesystem in /sys
+The petitboot environment WILL provide a full set of device nodes in /dev
+The petitboot environment WILL share /var outside of the plugin environment
+(possibly including other plugins' chroots).
 The petitboot environment WILL create the mountpoints if nedeed.
 The petitboot environment WILL create/replace the plugin's etc/resolv.conf
 
