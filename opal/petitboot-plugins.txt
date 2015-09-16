@@ -121,7 +121,11 @@ The following restrictions apply:
 - PLUGIN_DATE *MUST* be in the format YYYY-MM-DD
   The format MM/DD/YY is EXPLICITLY NOT SUPPORTED or encouraged. Anywhere. Ever.
 
-TODO: clarify UTF8 support in these fields
+The PLUGIN_NAME and PLUGIN_VENDOR variables MAY contain UTF-8 encoded
+characters, typically to allow plugins implemented in langauges other than
+English. However, there is no guarantee that users will be using a terminal
+emulator that can support non-ASCII characters. Other variables should only
+contain ASCII characters.
 
 Each executable in PLUGIN_EXECUTABLES *SHOULD* be a unique name. Since the
 petitboot environment creates a wrapper script to execute the plugin from the
