@@ -108,7 +108,7 @@ PLUGIN_NAME='Hello World Petitboot Plugin Example 1'
 PLUGIN_ID='Hello World'
 PLUGIN_VERSION='1.0'
 PLUGIN_DATE='2015-09-16'
-PLUGIN_EXECUTABLES='/usr/bin/hello-world'
+PLUGIN_EXECUTABLES='/usr/bin/hello-world /usr/bin/other-binary'
 
 In the future, additional variables may be added, but these ones MUST ALWAYS
 exist. This allows any future incompatible change to gracefully fail, telling
@@ -127,10 +127,12 @@ English. However, there is no guarantee that users will be using a terminal
 emulator that can support non-ASCII characters. Other variables should only
 contain ASCII characters.
 
-Each executable in PLUGIN_EXECUTABLES *SHOULD* be a unique name. Since the
-petitboot environment creates a wrapper script to execute the plugin from the
-petitboot environment, installing two plugins with the same executable name
-WILL conflict, with whatever plugin was installed most recently winning.
+PLUGIN_EXECUTABLES is a space-separated list of executables that are made
+available for the user to invoke. Each executable in PLUGIN_EXECUTABLES
+*SHOULD* have a unique filename (excluding the path). Since the petitboot
+environment creates a wrapper script to execute the plugin from the petitboot
+shell environment, installing two plugins with the same executable name WILL
+conflict, with whatever plugin was installed most recently winning.
 
 It is thus RECOMMENDED that you name executables along the lines of
 'openpower-hello-world' rather than just 'hello-world' so as not to conflict
