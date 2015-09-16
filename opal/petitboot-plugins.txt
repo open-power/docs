@@ -77,7 +77,7 @@ ONLY in the root directory of accessible file systems.
 Petitboot plugins MAY be installed from other locations, possibly even over
 the network.
 
-pb-plugin.def contents
+pb-plugin.conf contents
 ----------------------
 This file tells petitboot about the plugin.
 
