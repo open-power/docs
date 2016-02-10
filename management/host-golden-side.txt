@@ -1,0 +1,83 @@
+Host golden-side boot
+=====================
+
+OpenPOWER systems may have support for a "golden side" of firmware in the PNOR.
+This is a second copy of firmware binaries and configuration, used
+only in a recovery situation.
+
+This is a separate mechanism for a golden-side image for any BMC implementation,
+but does rely on the BMC to manage booting to the second copy of firmware.
+
+How it works
+------------
+
+With current OpenPOWER implementations, the boot process has a little
+functionality to manage the golden side boot. The BMC maintains a "boot count"
+variable. This is initially set to a fairly low integer (2 for current
+implementations), and is decremented when the BMC starts the boot sequence. The
+boot count is exposed as a discrete IPMI sensor, and can be accessed with the
+Get Sensor Reading / Set Sensor Reading IPMI commands.
+
+Once the system has reached a user-accessible state (ie. petitboot), the boot
+count is reset (again, to 2 in current implementations).
+
+In cases where the system is booting properly, the boot count should only vary
+between N and N-1. The boot count sensor is available as a discrete IPMI sensor.
+
+If booting continually fails, the system firmware will not reach a point where
+the boot count is reset, and the boot count value will reach zero.
+
+If the system is booted in a condition where boot count is zero, the BMC
+will perform a boot sequence that causes the firmware to be loaded from the
+"golden side" of PNOR - generally a second copy of the firmware code present
+at a higher address.
+
+Querying BMC state
+------------------
+
+For OpenPOWER machines with an external IPMI interface to the BMC,
+query the 'Golden Side' and 'Boot Count' sensors (output trimmed for
+brevity):
+
+  [jk@openpower]$ ipmitool […] sensor list | grep '\(Golden Side\|Boot Count\)'
+  BMC Golden Side  | 0x0        | discrete   | 0x0080| na        |
+  BIOS Golden Side | 0x0        | discrete   | 0x0080| na        |
+  Boot Count       | 0x0        | discrete   | 0x0280| na        |
+
+As these are a discrete sensors, the value is given by the high byte of the
+assertion state, in the forth column. Here we see that the golden
+side - for both BMC and host - is 0, and the boot count is 2. This is
+the regular machine state.
+
+Querying Host state
+-------------------
+
+From the host, we can also determine which side we were actually used for the
+current boot, using device tree properties under the PNOR device.
+
+For a machine booted in regular state:
+  
+  [jk@openpower ~]$ cd \
+     /sys/firmware/devicetree/base/xscom@3fc0000000000/isa@b0020/pnor@fc000000
+  [jk@openpower pnor@fc000000]$ lsprop *-tocs
+  active-image-tocs
+  		 00000000 01ff8000
+  alternate-image-tocs
+  		 02000000 (33554432)
+  golden-image-tocs
+  		 02000000 (33554432)
+
+These 'tocs' properties describe locations of table-of-contents sections
+in the PNOR image. The 'active-image-tocs' describes the TOC (and
+possibly a backup TOC) that we used for this boot. In this case, we
+are using the TOC at address 0x00000000 of the PNOR flash image.
+
+The 'alternate-image-tocs' property describes potential alternate images.
+Here we have one at 32MB (0x02000000).
+
+We also see the golden TOC described in the 'golden-image-tocs' property,
+referencing a TOC at 32MB.
+
+Using these three properties, we can see that we booted from the "working"
+PNOR firmware image, and there was another image available at 32MB. This
+other image is the golden side.
