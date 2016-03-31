@@ -1,0 +1,128 @@
+Petitboot Bootloader Environment
+--------------------------------
+
+DRAFT 2
+
+Authors
+-------
+Stewart Smith <stewart@linux.vnet.ibm.com>
+Samuel Mendoza-Jonas <sjonas@au1.ibm.com>
+Jeremy Kerr <jeremy.kerr@au1.ibm.com>
+
+Defitinions
+-----------
+Petitboot kernel: the Linux kernel in PNOR
+skiroot: the userspace environment in which petitboot itself sits
+Petitboot: the petitboot bootloader itself (stored in skiroot)
+
+The combination of Petitboot kernel and skiroot sits in the BOOTKERNEL pnor
+partition and is loaded by skiboot (which sits in the PAYLOAD partition)
+
+Reference Implemetation
+-----------------------
+
+By definition, any tagged op-build release of op-build v1.7 or above is
+compliant.
+
+The op-build tree is the reference implementation.
+
+Open Source and building
+------------------------
+
+Any customised op-build environment MUST be able to be built on the same
+platforms and configurations that upstream op-build version can.
+
+TODO: list these for op-build 1.7
+
+With physical access to a box, you MUST be able to flash a custom built firmware
+
+Petitboot Kernel
+----------------
+By definition, the default kernel configuration and source tree in op-build
+is compliant.
+
+Any changes to kernel code MUST be submitted upstream and a commitment MUST
+be made to get them accepted
+
+EXT2 (can use ext3 or ext4 driver)
+EXT3 (can use ext4 driver)
+EXT4
+XFS
+BTRFS
+ISO9660
+UF
+VFAT and variants as supported by upstream linux vfat driver.
+
+Sufficient support to have the nvram utility work.
+
+Additional out of tree drivers are acceptable but MUST be submitted upstream
+and a committment to get them merged.
+
+A compliant implementation MUST NOT break kexec.
+
+MUST contain drivers for built in disk adapters and network adapters and MUST
+support booting from them.
+
+MUST have equivalent LVM/RAID support to the equivalent op-build release.
+
+The petitboot kernel SHOULD include support for a standard set of
+user-pluggable peripherals and add-on cards, which will be defined by
+the hardware facilities for attaching those devices.
+
+If a user-accessible USB port is present, the petitboot kernel SHOULD
+include support for:
+  - USB hub devices
+  - USB HID keyboard and mouse devices
+  - USB mass-storage devices
+  - SCSI disk and CDROM protocols
+  - (others?)
+
+If a user-accessible PCI / PCI express port is present and available,
+the petitboot kernel SHOULD include support for:
+ - AHCI-compliant storage devices
+
+Petitboot
+---------
+
+If replacing Petitboot itself, you MUST get a written exception to be compliant.
+
+Any modifications to Petitboot MUST maintain the following functionality:
+- parsing GRUB, yaboot, pxeboot and petitboot configurations
+- support booting both BE and LE linux kernels
+- using compliant petitboot-plugins
+- using kexec to boot kernels
+- booting uncompressed vmlinux
+- booting vmlinux with separate initramfs
+- passing kernel parameters
+- selecting one of many boot options
+- persistent boot options stored in NVRAM.
+- a method to change boot order/preference temporarily/permanently out of band.
+  - for example, via IPMI to a BMC.
+
+Translations: English (Australian) locale is the only translation that MUST be
+available.
+
+Other translations are RECOMMENDED.
+
+By default, MUST not write ANYTHING to storage. Petitboot does this using
+dm-snapshot, and this functionality MUST NOT be disabled by default.
+
+Petitboot UI MUST run by default
+
+Terminal
+--------
+If a serial console is used for the petitboot UI, the vt102 terminal
+protocol MUST be supported, including support for the utf-8 character
+set.
+
+
+Exit to shell
+-------------
+MUST always be available.
+
+All userspace utilities are not part of the spec, we explicitly allow variation
+and addition/subtraction of userspace utilities as long as this does *not*
+alter the behaviour of petitboot itself.
+
+It is RECOMMENDED to keep a useful set of utilities for rescuing and debugging
+systems, as this has proved valuable.
