@@ -1,0 +1,72 @@
+Sensors on OpenPOWER platforms
+==============================
+
+There are a number of sensors defined for OpenPOWER machines - some controlled
+by the POWER host, and some controlled by the management controller.
+
+ * "Func" (functional) sensors
+    Sensor type: discrete, specific type depends on component
+    Set by: hostboot
+
+    These represent whether a component is functional, and are set at boot-time
+    by hostboot firmware.
+
+    These are IPMI assertion sensors, complying with the IPMI-defined assertion
+    states appropriate to the sensor type.
+
+ * BIOS Golden side & BMC Golden side
+   Sensor type: OEM discrete (0xc3)
+   Set by: BMC
+
+   Bit 0 (the least-significant bit) indicates golden side boot. 0 = primary
+   side, 1 = working side.
+
+ * Boot count
+   Sensor type: OEM discrete (0xc3)
+   Set by: BMC, OPAL
+
+   The assertion bits (read as a uint8) indicate the boot count value. The BMC
+   uses this to detect when the system has failed sucessive boots, and should be
+   started in golden-side mode.
+
+ * "Fault" sensors
+   Sensor type: OEM discrete (0xc7)
+   Set by: hostboot
+
+   The least-significant assertion bit indicates a fault.
+ 
+ * Firmware boot progress
+   Sensor type: discrete, System Firmware Progress (0x0f)
+
+   Assertion type. During boot, hostboot and OPAL will update this sensor to one
+   of the IPMI-defined progress codes.
+
+ * Turbo allowed
+   Sensor type: OEM discrete (0xcb)
+   Set by: BMC
+
+   Single-state digital sensor that indicates whether the on-chip controllers
+   will allow the host processors to enter turbo mode.
+
+ * System Event
+   Sensor type: discrete, System Event (0x61)
+   Set by: hostboot
+
+   Will assert an IPMI-specified system failure state.
+
+TODO
+----
+
+ * APSS sensor
+ * Power/current sensor(s)
+ * Quick Power drop sensor
+
+Further details
+---------------
+
+There are some further details of IPMI sensor interactions here:
+
+ * OPAL documentation on BMC interactions:
+   https://github.com/open-power/skiboot/blob/master/doc/bmc.txt
+
+
