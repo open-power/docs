@@ -1,0 +1,18 @@
+System Event Logs (SELs) on OpenPOWER platforms
+===============================================
+
+OpenPOWER BMCs will record standard IPMI SEL logs, but will typically vary by
+BMC implementation. For general system fault monitoring, SEL events logged
+against the Fault sensors (see the sensors.txt document) will be raised to
+indicate FRU-specific faults.
+
+In addition to these standard SEL events, host firmware may generate the
+following types of SELs:
+
+ * SEL type 0xdf: flattened PEL
+ * SEL type 0xde: symbolic fru/isolation procedure
+
+These events are also reflected in an eSEL record, which contains extended debug
+data for fault analysis
+
+TODO: eSEL interpretation
