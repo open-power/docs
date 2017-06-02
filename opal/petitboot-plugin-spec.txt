@@ -1,0 +1,197 @@
+Petitboot Plugins
+=================
+
+DRAFT
+
+This specification is for plugins to the Petitboot Bootloader environment.
+
+The petitboot bootloader is part of the OpenPower firmware stack.
+
+This document describes what plugin authors can expect, what is explicitly
+supported and what is explicitly *not* supported.
+
+Authors
+-------
+Initial Specification Draft: Stewart Smith <stewart@linux.vnet.ibm.com>
+Reference implementation of Petitboot Plugin: Jeremy Kerr <jk@ozlabs.org>
+
+Availability
+------------
+The first op-build release to support petitboot plugins is v1.7 (released
+September 2015). Refer to individual firmware vendor's release notes to
+find minimal firmware versions for shipping machines.
+
+Prior versions of OPAL firmware do *not* support petitboot plugins of any
+type.
+
+Goal
+----
+
+To allow vendors to provide various userspace tools and utilities for
+execution within the petitboot environment.
+
+For example: configuration utilities for RAID cards.
+
+Petitboot plugins are not meant to solve all of the possible problems,
+sometimes providing a bootable image may be preferable to a petitboot
+plugin.
+
+Implementation
+--------------
+See petitboot/utils/pb-plugin source for the reference implementation.
+
+File format
+-----------
+
+Petitboot plugins are a gzip compressed cpio archive ending in ".pb-plugin".
+
+Within this archive, there MUST exist a etc/preboot-plugins/pb-plugin.conf
+file (see pb-plugin.conf definition below).
+
+As of petitboot plugin ABI version 1, the etc/preboot-plugins/ directory
+is reserved and MUST NOT contain any files other than pb-plugin.conf
+
+The archive will be extracted and run in a chroot-like environment, so it
+is RECOMMENDED that plugins follow the Filesystem Hierarchy Standard, although
+this is not REQUIRED. The intention is to isolate the plugin from both other
+plugins and the petitboot environment itself.
+
+The following paths MAY exist but the petitboot environment MAY (and indeed,
+in the current implementation WILL) mount filesystems over them:
+- dev
+- sys
+- proc
+- var
+
+The petitboot environment WILL provide a full proc filesystem in /proc
+The petitboot environment WILL provide a full sysfs filesystem in /sys
+The petitboot environment WILL provide a full set of device nodes in /dev
+The petitboot environment WILL share /var outside of the plugin environment
+(possibly including other plugins' chroots).
+The petitboot environment WILL create the mountpoints if nedeed.
+The petitboot environment WILL create/replace the plugin's etc/resolv.conf
+
+See Plugin ABI section.
+See also: http://refspecs.linuxfoundation.org/fhs.shtml
+
+Petitboot plugin location
+-------------------------
+The petitboot environment MAY support discovery of plugins. It will search
+ONLY in the root directory of accessible file systems.
+
+Petitboot plugins MAY be installed from other locations, possibly even over
+the network.
+
+pb-plugin.conf contents
+----------------------
+This file tells petitboot about the plugin.
+
+Within the petitboot plugin, it is found at etc/preboot-plugins/pb-plugin.conf
+
+Within this file, there MUST exist the following key/value pairs with the format
+KEY=VALUE :
+
+PLUGIN_ABI
+PLUGIN_ABI_MIN
+PLUGIN_VENDOR
+PLUGIN_VENDOR_ID
+PLUGIN_NAME
+PLUGIN_ID
+PLUGIN_VERSION
+PLUGIN_DATE
+PLUGIN_EXECUTABLES
+
+Values MAY be quoted. The pb-plugin.conf file is NOT executed shell and must
+not be treated as such.
+
+Example:
+PLUGIN_ABI='1'
+PLUGIN_ABI_MIN='1'
+PLUGIN_VENDOR='OpenPower Foundation'
+PLUGIN_VENDOR_ID='OpenPower'
+PLUGIN_NAME='Hello World Petitboot Plugin Example 1'
+PLUGIN_ID='Hello World'
+PLUGIN_VERSION='1.0'
+PLUGIN_DATE='2015-09-16'
+PLUGIN_EXECUTABLES='/usr/bin/hello-world /usr/bin/other-binary'
+
+In the future, additional variables may be added, but these ones MUST ALWAYS
+exist. This allows any future incompatible change to gracefully fail, telling
+the user about the presence of a plugin that cannot be run.
+
+The following restrictions apply:
+- PLUGIN_ABI and PLUGIN_ABI_MIN must be numeric (0-9+)
+- PLUGIN_ID and PLUGIN_VENDOR_ID should only contain lowercase alphanumerics
+  and hyphens
+- PLUGIN_DATE *MUST* be in the format YYYY-MM-DD
+  The format MM/DD/YY is EXPLICITLY NOT SUPPORTED or encouraged. Anywhere. Ever.
+
+The PLUGIN_NAME and PLUGIN_VENDOR variables MAY contain UTF-8 encoded
+characters, typically to allow plugins implemented in langauges other than
+English. However, there is no guarantee that users will be using a terminal
+emulator that can support non-ASCII characters. Other variables should only
+contain ASCII characters.
+
+PLUGIN_EXECUTABLES is a space-separated list of executables that are made
+available for the user to invoke. Each executable in PLUGIN_EXECUTABLES
+*SHOULD* have a unique filename (excluding the path). Since the petitboot
+environment creates a wrapper script to execute the plugin from the petitboot
+shell environment, installing two plugins with the same executable name WILL
+conflict, with whatever plugin was installed most recently winning.
+
+It is thus RECOMMENDED that you name executables along the lines of
+'openpower-hello-world' rather than just 'hello-world' so as not to conflict
+with a possible 'acme-hello-world'.
+
+Plugin ABI versioning
+---------------------
+
+The Petitboot environment will support a petitboot plugin ABI version.
+Each petitboot plugin has a minimal ABI version it supports running.
+
+If the petitboot plugin's ABI version is GREATER than the petitboot
+environment's, the plugin MUST NOT be run.
+
+A plugin is OK to run if:
+1. the plugin's ABI matches the petitboot environment's ABI, or
+2. the plugin's minimum ABI is lower than or equal to the petitboot
+   enviornement's ABI
+
+Plugin ABI
+----------
+The Petitboot environment provides the following ABI to plugins:
+- Linux kernel ppc64el ABI
+  - with the expectation that executables fail gracefully if certain
+    kernel features are not available.
+  - depending on optional kernel features is NOT RECOMMENDED.
+    For the large part: be sensible. You can expect syscalls as of
+    linux 4.2 to exist.
+    - Some plugins may REQUIRE certain functionality to be enabled in
+      the petitboot kernel (for example: a specific RAID driver).
+      It is encouraged to fail gracefully in the absence of this
+      driver with an easy to understand error message for the user.
+
+It EXPLICITLY DOES NOT support kernel modules. You MUST NOT include
+kernel modules in your plugin. If you require kernel module support,
+ship instead a bootable disk rather than a petitboot plugin.
+
+As each plugin executes in its own chroot environment, binaries must
+either be statically linked or MUST include ALL dependencies (for example:
+dynamic linker, libc, ncurses)
+
+Plugin executables execute as root in the plugin's chroot environment. The
+plugin chroot environment is temporary and IS NOT persistent across reboots.
+This is implemented in the reference implementation by extracting the
+plugin into a ram disk.
+
+The var/ mountpoint inside a plugin chroot environment is a bind mount
+of the petitboot environment /var. Be sensible with logging within your
+petitboot plugin: don't overwrite petitboot logs, log to a file name unique
+to your plugin.
+
+While more than just var/log is exposed to the plugin, it is explictily
+NOT SUPPORTED to use the var/ bind mount for anything BUT logging.
+
+It is possible that in a future release, the implementation may change so
+that the plugin CANNOT access anything but its own logs in var/ but that
+the petitboot environment CAN access the logs of the plugin.
