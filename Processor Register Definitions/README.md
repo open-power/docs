@@ -1,1 +1,1 @@
-# Processor Register Definitions
+# POWER10 Processor Register Definitions
