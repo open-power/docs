@@ -13,14 +13,14 @@ See [OCC Firmware Interface Specification](https://github.com/open-power/docs/bl
 ![](http://i.imgur.com/rpVv1zB.png?1)
 
 ###**AMEC**:###
-  **A**utonomic **M**anagement of **E**nergy **C**omponent is the heart of the OCC firmware and utilizes the capabilities of the hardware to continuously monitor temperature and power.AMEC processes system data and populates sensors (e.g. system power and processor temperature).  This data is used to feed the control algorithms that make the decision of when and how to actuate.  This actuation takes place via different mechanisms such as changing the maximum Pstate and memory throttling.  Once a control loop has made a decision of where the system should be, it generates a vote.  All votes from all control loops are then tallied and the winner gets to drive the system.  In order to accommodate all these functions, a state machine regulated by time needs to be defined inside AMEC.  The AMEC state machine consists of eight states that are executed on consecutive ticks, where each tick happens every 250us meaning each state will get executed every 2ms.  Each state can be further sub-divided into further sub-states.  For instance:
+  **A**utonomic **M**anagement of **E**nergy **C**omponent is the heart of the OCC firmware and utilizes the capabilities of the hardware to continuously monitor temperature and power.AMEC processes system data and populates sensors (e.g. system power and processor temperature).  This data is used to feed the control algorithms that make the decision of when and how to actuate.  This actuation takes place via different mechanisms such as changing the maximum Pstate and memory throttling.  Once a control loop has made a decision of where the system should be, it generates a vote.  All votes from all control loops are then tallied and the winner gets to drive the system.  In order to accommodate all these functions, a state machine regulated by time needs to be defined inside AMEC.  The AMEC state machine consists of eight states that are executed on consecutive ticks, where each tick happens every 500us meaning each state will get executed every 2ms.  Each state can be further sub-divided into further sub-states.  For instance:
 
-- Having four sub-states means that each will get executed every 8ms
-- Having eight sub-states means that each will get executed every 16ms
+- Having four sub-states means that each will get executed every 16ms
+- Having eight sub-states means that each will get executed every 32ms
 
 On any given tick, only one of all these sub-states will get executed.  If there is a need for a longer time delay in the execution of certain functions, a given sub-state could be broken down into additional sub-states.
 
-Functions that need to be executed on every 250us tick will be called outside the state machines.
+Functions that need to be executed on every 500us tick will be called outside the state machines.
 
 The following diagram illustrates the flow of the state machine.
 
