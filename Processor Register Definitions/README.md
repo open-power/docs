@@ -6,4 +6,4 @@ This repo contains all of the processor register definitions for POWER10.  To vi
 
 Then you can navigate the directory from there.
 
-Caution -- do not open "All Registers" unless you have lots of system memory and lots of time to wait for it load.  It is huge.
+Caution -- do not open "All Chiplets" unless you have lots of system memory and lots of time to wait for it load.  It is huge.
