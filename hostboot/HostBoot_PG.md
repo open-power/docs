@@ -25,7 +25,7 @@ The hostboot firmware provides the following initial program load (IPL) capabili
 The following simplified scenario describes what happens when the user pushes the button to power on the system, when the system is already in the standby state.
 
 1.	The baseboard management controller (BMC) powers the system on.
-2.	The BMC selects the master chip and releases the self-boot engines (SBEs) on the POWER8 chips, master last.
+2.	The BMC selects the primary chip and releases the self-boot engines (SBEs) on the POWER8 chips, primary last.
 3.	The BMC relinquishes control of the flexible service interface (FSI) SCAN/SCOM engines.
 4.	The hostboot firmware IPLs the system. It initiates a secondary power-on sequence through a digital power systems sweep (DPSS).
 5.	The hostboot firmware loads the OPAL image and moves all processors to their execution starting points.
@@ -83,11 +83,11 @@ The following device drivers are provided. All device drivers register their ser
 
 **SCOM device driver**. This “abstract” device driver provides a scan communication (SCOM) interface for the processor and memory buffer chips. It must determine which concrete device driver to use based on the supplied target.
 
-**FSI-SCOM device driver**. This device driver provides an SCOM interface for the slave processor and memory buffer chips when the processor buses are not configured. It is slower than other SCOM types due to the overhead of using FSI.
+**FSI-SCOM device driver**. This device driver provides an SCOM interface for the secondary processor and memory buffer chips when the processor buses are not configured. It is slower than other SCOM types due to the overhead of using FSI.
 
 **In-band SCOM device driver**. This device driver provides an SCOM interface for the memory buffer chips when the DMI buses are configured.
 
-**XSCOM device driver.** This device driver provides an SCOM interface for the master processor chip always, or to the slave processor chips only when the processor buses are configured.
+**XSCOM device driver.** This device driver provides an SCOM interface for the primary processor chip always, or to the secondary processor chips only when the processor buses are configured.
 
 **I2C device driver**. This device driver is used to read and write inter-integrate cicuit (I2C) devices. It must also provide presence-detect capabilities to determine the presence of dual inline memory modules (DIMMs).
 
@@ -95,9 +95,9 @@ The following device drivers are provided. All device drivers register their ser
 
 **EEPROM device driver**. This device driver reads or writes EEPROM devices (such as the SEEPROM) and abstracts the caller from knowing the details of EEPROM access
 
-**PNOR device driver**. This device driver reads or writes either side of the processor NOR (PNOR) flash device attached to the master or alternative master processor chip to provide access to code and data images and configuration settings.
+**PNOR device driver**. This device driver reads or writes either side of the processor NOR (PNOR) flash device attached to the primary or alternative primary processor chip to provide access to code and data images and configuration settings.
 
-**FSI master device driver**. This device driver performs a flexible service interface (FSI) bus walk to configure and detect FSI-based devices/engines. It provides support for FSI-based device drivers and supports presence detect. It does not support read/write access from outside the device-driver framework.
+**FSI primary device driver**. This device driver performs a flexible service interface (FSI) bus walk to configure and detect FSI-based devices/engines. It provides support for FSI-based device drivers and supports presence detect. It does not support read/write access from outside the device-driver framework.
 
 ## Base Enablement Libraries and Services ##
 The following base enablement libraries and services are required by the hostboot.
@@ -305,9 +305,9 @@ The following terms are used in this document.
 
 **PCB**	Pervasive control bus. Processor logic that provides a generic, modular structure for communication between pervasive elements (the glue logic between chiplets).
 
-**PIB**	Pervasive interconnect bus. A bus that provides access from masters through external interfaces and internal masters to common PIB attached slaves.
+**PIB**	Pervasive interconnect bus. A bus that provides access from primary through external interfaces and internal primary to common PIB attached secondary chips.
 
-**PNOR**	Processor NOR. NOR memory device where all firmware, including the hostboot firmware, is stored and from which it is loaded. It is attached to the master or alternate master processor through an SPI bus.
+**PNOR**	Processor NOR. NOR memory device where all firmware, including the hostboot firmware, is stored and from which it is loaded. It is attached to the primary or alternate primary processor through an SPI bus.
 
 **PORE**	Power-on reset engine. A processor engine that initializes various other hardware entities using a simple instruction image.
 
@@ -325,11 +325,11 @@ The following terms are used in this document.
 
 **Service** A set of public APIs, tasks, and internal functions that logically perform a major function within the hostboot environment. In the hostboot context, a service can be as elaborate as a C++ object with its own worker threads or as simple as a single function.
 
-**Slave chip**	Any host processor chip that is not a master chip at an instantaneous moment of time.  That is, the alternate master processor chip is considered to be a slave chip when not elected as the instantaneous master processor chip.
+**Secondary chip**	Any host processor chip that is not a primary chip at an instantaneous moment of time.  That is, the alternate primary processor chip is considered to be a secondary chip when not elected as the instantaneous primary processor chip.
 
 **SPD**	Serial presence detect. SDRAM features an on-board SPD chip that contains information about the memory type, size, speed, and access time. This chip lets the computer access this information at start-up while it goes through its power-on test cycle.
 
-**SPI**	Serial peripheral interface. Refers to a 4-wire, serial, full-duplex bus with masters and slaves. Commonly used to interface with sensors, control devices, and so on in embedded systems.
+**SPI**	Serial peripheral interface. Refers to a 4-wire, serial, full-duplex bus with primary and secondary. Commonly used to interface with sensors, control devices, and so on in embedded systems.
 
 **STL**	Standard template library.
 
@@ -339,4 +339,4 @@ The following terms are used in this document.
 
 **Winkle**	Special very-low power state for a processor core, where most of it, and the surrounding logic, is shut off. Because this state is destructive to core initialization settings, a core-specific winkle image containing initialization instructions must be executed by the PORE to bring the core back online. Core winkle can only occur when all hardware threads for a given core commit themselves to the winkle state.
 
-**XSCOM**	Special, fast SCOM that allows the processor cores to directly SCOM the PIB. Processor buses must be enabled to the slave processor chips for the master processor to XSCOM them.
+**XSCOM**	Special, fast SCOM that allows the processor cores to directly SCOM the PIB. Processor buses must be enabled to the secondary processor chips for the primary processor to XSCOM them.
